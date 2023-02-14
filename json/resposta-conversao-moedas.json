@@ -1,0 +1,13 @@
+{
+  "result": "success",
+  "documentation": "https://www.exchangerate-api.com/docs",
+  "terms_of_use": "https://www.exchangerate-api.com/terms",
+  "time_last_update_unix": 1676073602,
+  "time_last_update_utc": "Sat, 11 Feb 2023 00:00:02 +0000",
+  "time_next_update_unix": 1676160002,
+  "time_next_update_utc": "Sun, 12 Feb 2023 00:00:02 +0000",
+  "base_code": "USD",
+  "target_code": "BRL",
+  "conversion_rate": 5.2592,
+  "conversion_result": 5.2592
+}
