@@ -1,9 +1,16 @@
 'use strict'
 
-/* Modo escuro */
+/* start modo escuro */
 pegarElemento('.header__check').addEventListener('change', (e)=>{
-    const estadobtnModo = e.target.checked;
-    if(estadobtnModo){
+    e.target.checked ? modoEscuro('dark') : modoEscuro('light'); 
+});
+
+window.onload = pegandoTemaEscolhido; 
+
+function modoEscuro(tema){
+    salvandoTemaEscolhido(tema);
+    
+    if(tema === 'dark'){
         pegarElemento('html').classList.add('dark-mode');
         pegarElemento('.header__light').style.opacity = "0.5";
         pegarElemento('.header__dark').style.opacity = "1";
@@ -12,7 +19,20 @@ pegarElemento('.header__check').addEventListener('change', (e)=>{
         pegarElemento('.header__light').style.opacity = "1";
         pegarElemento('.header__dark').style.opacity = "0.5";
     }
-})
+}
+
+function salvandoTemaEscolhido(valorTema){
+    const temaEscolido = (valorTema === 'dark') ? localStorage.setItem('tema', 'dark') : localStorage.setItem('tema', 'light');
+};
+
+function pegandoTemaEscolhido(){
+    const tema = localStorage.getItem('tema');
+    if(tema === 'dark'){
+        pegarElemento('.header__check').checked = true;
+    }
+    modoEscuro(tema);
+};
+/* end modo escuro */
 
 function pegarElemento(elemento){
     return document.querySelector(elemento);
@@ -34,7 +54,7 @@ function inserirElementos(pai, filho){
 
 function criarItemListaDeMoedas(url, texto){
     const itemLi = criaelementoEAtributo('li', 'class', 'conteudo__search-item p-3 d-flex align-items-center');
-    const itemImg = criaelementoEAtributo('img', 'src', pegarFlag(url));
+    const itemImg = criaelementoEAtributo('img', 'src', pegarFlag('24', url));
     const itemSpan = criaelementoEAtributo('span', 'class', 'conteudo__search-texto ms-2');
     itemSpan.innerText = texto;
 
@@ -47,8 +67,8 @@ function criarItemListaDeMoedas(url, texto){
 /* Criando lista de moedas */
 const urlListaMoedas = './json/resposta-lista-moedas.json';
 
-function pegarFlag(flag){
-    return `https://www.countryflagicons.com/FLAT/24/${flag}.png`
+function pegarFlag(tamanho, flag){
+    return `https://www.countryflagicons.com/FLAT/${tamanho}/${flag}.png`
 }
 
 let moedas = [];
@@ -58,7 +78,7 @@ async function puxarDadosListaMoedas(){
     const jsonListaMoedas = await respostaListaMoedas.json();
     const listaMoedas = await jsonListaMoedas.currencies;
     listaMoedas.forEach(element => {
-        //console.log(element);
+        
         const flag1 = element.currency === 'XOF';
         const flag2 = element.currency === 'XPF';
         const flag3 = element.currency === 'XCD';
@@ -90,7 +110,6 @@ function igualandoWidth(){
     })
 };
 
-
 function redimensionarListaMoedas(){
     igualandoWidth()
     addEventListener('resize', igualandoWidth)
@@ -98,42 +117,48 @@ function redimensionarListaMoedas(){
 };
 /* End Redimensionando listas de moeda */
 
-
 /* start mostrando lista de moedas ao clicar no campo de pesquisa */
 pegarElementos('.conteudo__pesquisa').forEach((campoPesquisa) => {
     campoPesquisa.addEventListener('click', mostrarListaMoedas)
 })
 
 function mostrarListaMoedas(){
-    const classeListaMoedas = pegarElemento(`#${this.id} + .conteudo__search-lista`).classList;
+    const inputPesquisa = this;
+    
+    const classeListaMoedas = pegarElemento(`#${inputPesquisa.id} + .conteudo__search-lista`).classList;
 
-    if(classeListaMoedas.contains('d-none')){
+    if(!classeListaMoedas.contains('d-none') && !inputPesquisa.value){
+        classeListaMoedas.add('d-none');
+    }else{
         classeListaMoedas.remove('d-none');
     }
 }
 /* end mostrando lista de moedas ao clicar no campo de pesquisa */
-
 
 /* start ocultar lista de moedas depois de uma moeda selecionada */
 function ocultarListaDeMoedas(){
     pegarElementos('.conteudo__search-item').forEach((itemListaMoedas) => {
         itemListaMoedas.addEventListener('click', moedaSelecionada);
         itemListaMoedas.addEventListener('click', ocultarLista);
+        itemListaMoedas.addEventListener('click', mostrarResultado);
     });
 };
 
 function ocultarLista(){
-    pegarElemento(`#${this.parentNode.parentNode.children[0].id} + .conteudo__search-lista`).classList.add('d-none')
+    const inputPesquisar = this.parentNode.parentNode.children[0];
+
+    pegarElemento(`#${inputPesquisar.id} + .conteudo__search-lista`).classList.add('d-none')
 };
 /* end ocultar lista de moedas depois de uma moeda selecionada */
 
-
 /* start inserir elemento selecionado no campo de pesquisa */
 function moedaSelecionada(){
-    pegarElemento(`#${this.parentNode.parentNode.children[0].id}`).value = this.innerText
+    const inputPesquisar = this.parentNode.parentNode.children[0];
+    const itemListaMoedas = this;
+    
+    pegarElemento(`#${inputPesquisar.id}`).value = itemListaMoedas.innerText
 }
 /* end inserir elemento selecionado no campo de pesquisa */
-
 
 /* start pesquisar moeda no campo de seleção */
 function selecionarMoeda(){
@@ -143,18 +168,66 @@ function selecionarMoeda(){
 }
 
 function valorPesquisado(){
-    pegarElemento(`#${this.id} + .conteudo__search-lista`).innerText = ''
+    const inputPesquisa = this;
+
+    pegarElemento(`#${inputPesquisa.id} + .conteudo__search-lista`).innerText = ''
     
     moedas.filter((moeda) => {
-        return moeda.querySelector('span').innerText.toLowerCase().includes(document.querySelector(`#${this.id}`).value.toLowerCase());
+        return moeda.querySelector('span').innerText.toLowerCase().includes(document.querySelector(`#${inputPesquisa.id}`).value.toLowerCase());
 
     }).forEach((item) => {
-        console.log(this);
-        inserirElementos(pegarElemento(`#${this.id} + .conteudo__search-lista`), item)
-        item.addEventListener('click', (e)=>{
-            document.querySelector(`#${this.id}`).value = e.target.innerText
-            pegarElemento(`#${this.id} + .conteudo__search-lista`).classList.remove('lista-v')
-        })
+        inserirElementos(pegarElemento(`#${inputPesquisa.id} + .conteudo__search-lista`), item)
+        item.addEventListener('click', inserirMoedaNoCampoPesquisa);
+        item.addEventListener('click', mostrarResultado)
+
     })
 }
+
+function inserirMoedaNoCampoPesquisa(){
+    const nomeMoeda = this.innerText;
+    const inputPesquisa = this.parentNode.parentNode.children[0];
+    
+    pegarElemento(`#${inputPesquisa.id}`).value = nomeMoeda;
+    pegarElemento(`#${inputPesquisa.id} + .conteudo__search-lista`).classList.add('d-none')
+}
 /* end pesquisar moeda no campo de seleção */
+
+/* start criando bloco de resultado da conversão */
+function mostrarResultado(){
+    const itemMoedaSelecionada = this.children[1].innerText;
+    const valorInput = this.parentNode.parentNode.nextElementSibling.value
+    const ladoDeReferencia = this.parentNode.parentNode.children[0].id.split('-')[1];
+
+    const ladoResultado = pegarElemento(`#resultado-${ladoDeReferencia}`);
+
+    const boxResultadoValor = criaelementoEAtributo('div', 'class', 'resultado__valor')
+    const imgBandeira = criaelementoEAtributo('img', 'src', pegarFlag('48', itemMoedaSelecionada.split('-')[0].slice(0,2)));
+
+    const valorMoeda = criaelementoEAtributo('span', 'class', 'resultado__num');
+    const nomeMoeda = criaelementoEAtributo('span', 'class', 'resultado__nome');
+
+    valorMoeda.innerText = valorInput
+    nomeMoeda.innerText = itemMoedaSelecionada.split('-')[1];
+
+    pegarElemento('.resultado').classList.remove('d-none');
+
+    ladoResultado.classList.remove('d-none');
+    ladoResultado.innerHTML = " ";
+
+    inserirElementos(ladoResultado, imgBandeira);
+    inserirElementos(ladoResultado, boxResultadoValor);
+    inserirElementos(boxResultadoValor, valorMoeda);
+    inserirElementos(boxResultadoValor, nomeMoeda);
+}
+/* end criando bloco de resultado da conversão */
+
+/* start pegando valor do input number */
+pegarElementos('.conteudo__input').forEach((input) => {
+    input.addEventListener('input', pegarValorInput)
+})
+
+function pegarValorInput(){
+    const boxResultado = pegarElemento(`#resultado-${this.id.split('-')[1]}`);
+    boxResultado.querySelector('.resultado__valor > span').innerText = this.value;
+}
+/* end pegando valor do input number */

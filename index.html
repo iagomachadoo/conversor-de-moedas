@@ -48,44 +48,38 @@
             <div class="row align-items-center mb-5">
                 <div class="conteudo__left d-flex flex-column col-lg-4 mb-lg-0 mb-4">
                     <div class="conteudo__box-search">
-                        <input type="search" name="pesquisa-left" id="pesquisa-left" placeholder="Selecione uma moeda" class="position-relative conteudo__pesquisa">
-                        <ul class="conteudo__search-lista position-absolute d-none">
+                        <input type="search" name="pesquisa-left" id="pesquisa-left" placeholder="Clique e selecione uma moeda" class="position-relative conteudo__pesquisa">
+                        <ul class="conteudo__search-lista position-absolute d-none z-1">
                         </ul>
                     </div>
-                    <input type="number" name="valor-left" id="valor-left" class="mt-3 conteudo__input ps-3">
+                    <input type="number" name="valor-left" id="valor-left" class="mt-3 conteudo__input ps-3" min="0" value="0">
                 </div>
                 <div class="col-lg-4 text-center mb-lg-0 mb-4">
                     <span class="material-symbols-outlined conteudo__icone">currency_exchange</span>
                 </div>
                 <div class="conteudo__right d-flex flex-column col-lg-4">
                     <div class="conteudo__box-search">
-                        <input type="search" name="pesquisa-right" id="pesquisa-right" placeholder="Selecione uma moeda" class="position-relative conteudo__pesquisa">
-                        <ul class="conteudo__search-lista position-absolute d-none">
+                        <input type="search" name="pesquisa-right" id="pesquisa-right" placeholder="Clique e selecione uma moeda" class="position-relative conteudo__pesquisa">
+                        <ul class="conteudo__search-lista position-absolute d-none z-1">
                         </ul>
                     </div>
-                    <input type="number" name="valor-right" id="valor-right" class="mt-3 conteudo__input ps-3">
+                    <input type="number" name="valor-right" id="valor-right" class="mt-3 conteudo__input ps-3" min="0" value="0">
                 </div>
             </div>
-            <div class="row d-flex justify-content-center mb-5">
+            <div class="row d-flex justify-content-center mb-5 d-none">
                 <button class="col-12 conteudo__btn-converter d-flex align-items-center">converter <span class="material-symbols-outlined ms-2 conteudo__btn-converter-icone">currency_exchange</span></button>
             </div>
             <div class="row">
-                <div class="resultado py-5">
+                <div class="resultado py-5 d-none">
                     <div class="row">
                         <div class="col-md-4 mb-md-0 mb-4">
-                            <div class="resultado__box py-2 px-3 d-flex flex-column align-items-center">
-                                <img src="https://www.countryflagicons.com/FLAT/48/BR.png" alt="" class="resultado__flag">
-                                <span class="resultado__valor">1 Real Brasileiro</span>
-                            </div>
+                            <div class="resultado__box py-2 px-3 d-flex flex-column align-items-center d-none" id="resultado-left"></div>
                         </div>
                         <div class="col-md-4 mb-md-0 mb-4 d-flex align-items-center justify-content-center">
                             <span class="material-symbols-outlined resultado__icone">equal</span>
                         </div>
                         <div class="col-md-4">
-                            <div class="resultado__box py-2 px-3 d-flex flex-column align-items-center">
-                                <img src="https://www.countryflagicons.com/FLAT/48/BR.png" alt="" class="resultado__flag">
-                                <span class="resultado__valor">1 Real Brasileiro</span>
-                            </div>
+                            <div class="resultado__box py-2 px-3 d-flex flex-column align-items-center d-none" id="resultado-right"></div>
                         </div>
                     </div>
                 </div>
@@ -94,14 +88,11 @@
     </section>
 
     <footer class="footer py-3">
-        <div class="container d-flex justify-content-center align-items-center flex-column">
+        <div class="container d-flex justify-content-center">
             <a href="#" class="footer__link px-2 py-3 d-inline-block mb-2">
                 <p class="footer__texto my-0 d-inline-block">site desenvolvido por</p>
                 <span>Iago Machado</span>
             </a>
-            <div class="">
-                Usando a api <a href="https://www.amdoren.com" style="color:inherit" target="_blank">Amdoren</a>
-            </div>
         </div>
     </footer>
 
