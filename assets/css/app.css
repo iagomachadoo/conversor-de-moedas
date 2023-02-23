@@ -14,12 +14,12 @@
 .dark-mode:root{
     --cor-input: #03001C;
     --cor-box-resultado: #03001C;
-    --cor-box-logo: #301E67; 
-    --cor-resultado: #301E67;
-    --cor-top-bottom: #03001C;
-    --cor-texto: #B6EADA;
-    --cor-fundo: #301E67; 
-    --border: 2px solid #B6EADA;
+    --cor-box-logo: #1A1A1A; 
+    --cor-resultado: #1A1A1A;
+    --cor-top-bottom: #0A0A0A;
+    --cor-texto: #A0A0A0;
+    --cor-fundo: #121212; 
+    --border: 2px solid #404040;
 
     --font-padrao: 'Roboto', sans-serif;
 }
@@ -75,6 +75,7 @@ body{
     background-color: var(--cor-input);
     padding: 4px 12px;
     color: var(--cor-texto);
+    cursor: pointer;
 }
 
 #pesquisa-left:focus-visible,
@@ -87,7 +88,7 @@ body{
     list-style: none;
     height: 200px;
     overflow-y: scroll;
-    background-color: #B6EADA;
+    background-color: var(--cor-input);
 }
 
 .conteudo__search-item{
@@ -104,16 +105,6 @@ body{
 .resultado__icone{
     color: var(--cor-texto);
     font-size: 32px;
-    cursor: pointer;
-    transition: 200ms ease-in-out;
-}
-
-.resultado__icone{
-    cursor: default;
-}
-
-.conteudo__icone:hover{
-    font-size: 34px;
 }
 
 .conteudo__input{

@@ -30,43 +30,6 @@ function criarItemListaDeMoedas(url, texto){
     return itemLi
 }
 
-/* start modo escuro */
-pegarElemento('.header__check').addEventListener('change', pegarEstadoBtnCheked);
-
-function pegarEstadoBtnCheked(e){
-    this.checked ? modoEscuro('dark') : modoEscuro('light'); 
-}
-
-window.onload = pegandoTemaEscolhido; 
-
-function modoEscuro(tema){
-    salvandoTemaEscolhido(tema);
-    
-    if(tema === 'dark'){
-        pegarElemento('html').classList.add('dark-mode');
-        pegarElemento('.header__light').style.opacity = "0.5";
-        pegarElemento('.header__dark').style.opacity = "1";
-    }else{
-        pegarElemento('html').classList.remove('dark-mode');
-        pegarElemento('.header__light').style.opacity = "1";
-        pegarElemento('.header__dark').style.opacity = "0.5";
-    }
-}
-
-function salvandoTemaEscolhido(tema){
-    tema === 'dark' ? localStorage.setItem('tema', 'dark') : localStorage.setItem('tema', 'light');
-};
-
-function pegandoTemaEscolhido(){
-    const tema = localStorage.getItem('tema');
-
-    if(tema === 'dark'){
-        pegarElemento('.header__check').checked = true;
-    }
-    modoEscuro(tema);
-};
-/* end modo escuro */
-
 /* Criando lista de moedas */
 const urlListaMoedas = './json/resposta-lista-moedas.json';
 
@@ -106,16 +69,17 @@ async function puxarDadosListaMoedas(){
 puxarDadosListaMoedas()
 
 /* start pegando dados api valores monetário */
+let taxadeConversao = 0;
+
 async function puxarDadosApiValoresMoeda(moedaBase, moedaDestino){
-    /* console.log(moedaBase);
-    console.log(moedaDestino); */
+    console.log(moedaBase);
+    console.log(moedaDestino);
     const apiKey = '465de5fb1516f6aa0d01062f';
 
-    const resposta = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${moedaBase}/${moedaDestino}`);
+    const resposta = await fetch(`https://cors-anywhere.herokuapp.com/https://v6.exchangerate-api.com/v6/${apiKey}/pair/${moedaBase}/${moedaDestino}`);
     const respostaJson = await resposta.json();
-    const taxadeConversao = await respostaJson.conversion_rate;
-
-    return taxadeConversao;
+    taxadeConversao = await respostaJson.conversion_rate;
+    console.log(taxadeConversao);
 }
 
 /* end pegando dados api valores monetário */
@@ -175,8 +139,8 @@ function moedaSelecionada(){
     const itemListaMoedas = this;
     pegarElemento(`#${inputPesquisar.id}`).value = itemListaMoedas.innerText;
 
-    const moedaBase = pegarElemento(`#pesquisa-left`).value.split('-')[0];
-    const moedaDestino = pegarElemento(`#pesquisa-right`).value.split('-')[0];
+    const moedaBase = pegarElemento(`#pesquisa-left`).value.split('-')[0].trim();
+    const moedaDestino = pegarElemento(`#pesquisa-right`).value.split('-')[0].trim();
 
     if(moedaDestino.length !== 0){
         puxarDadosApiValoresMoeda(moedaBase, moedaDestino);
@@ -202,8 +166,15 @@ function valorPesquisado(){
     }).forEach((item) => {
         inserirElementos(pegarElemento(`#${inputPesquisa.id} + .conteudo__search-lista`), item)
         item.addEventListener('click', inserirMoedaNoCampoPesquisa);
-        item.addEventListener('click', mostrarResultado)
+        item.addEventListener('click', mostrarResultado);
+        item.addEventListener('click', (e)=>{
+            const moedaBase = document.querySelector('#pesquisa-left').value.split('-')[0].trim();
+            const moedaDestino = document.querySelector('#pesquisa-right').value.split('-')[0].trim();
 
+            if(moedaDestino.length !== 0){
+                puxarDadosApiValoresMoeda(moedaBase, moedaDestino);
+            }
+        })
     })
 }
 
@@ -247,12 +218,38 @@ function mostrarResultado(){
 
 /* start pegando valor do input number */
 pegarElementos('.conteudo__input').forEach((input) => {
-    input.addEventListener('change', pegarValorInput)
+    input.addEventListener('input', pegarValorInput)
 })
 
 function pegarValorInput(){
     const boxResultado = pegarElemento(`#resultado-${this.id.split('-')[1]}`);
     boxResultado.querySelector('.resultado__valor > span').innerText = this.value;
-    console.log(this.value);
+
+    if(this.id === 'valor-left'){
+        const valorLeft = this.value;
+        let valorRight = pegarElemento('#valor-right');
+        let resultadoRight = pegarElemento('#resultado-right .resultado__valor > .resultado__num');
+
+        if(valorLeft){
+            valorRight.value = (+valorLeft * taxadeConversao).toFixed(2);
+            resultadoRight.innerText = valorRight.value;
+        }else{
+            valorRight.value = '';
+            resultadoRight.innerText = '';
+        }
+
+    }else{
+        const valorRight = this.value;
+        let valorLeft = pegarElemento('#valor-left');
+        let resultadoLeft = pegarElemento('#resultado-left .resultado__valor > .resultado__num');
+
+        if(valorRight){
+            valorLeft.value = (+valorRight / taxadeConversao).toFixed(2);
+            resultadoLeft.innerText = valorLeft.value;
+        }else{
+            valorLeft.value = '';
+            resultadoLeft.innerText = '';
+        }
+    }
 }
 /* end pegando valor do input number */
