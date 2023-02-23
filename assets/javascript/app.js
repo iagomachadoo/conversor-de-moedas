@@ -1,39 +1,5 @@
 'use strict'
 
-/* start modo escuro */
-pegarElemento('.header__check').addEventListener('change', (e)=>{
-    e.target.checked ? modoEscuro('dark') : modoEscuro('light'); 
-});
-
-window.onload = pegandoTemaEscolhido; 
-
-function modoEscuro(tema){
-    salvandoTemaEscolhido(tema);
-    
-    if(tema === 'dark'){
-        pegarElemento('html').classList.add('dark-mode');
-        pegarElemento('.header__light').style.opacity = "0.5";
-        pegarElemento('.header__dark').style.opacity = "1";
-    }else{
-        pegarElemento('html').classList.remove('dark-mode');
-        pegarElemento('.header__light').style.opacity = "1";
-        pegarElemento('.header__dark').style.opacity = "0.5";
-    }
-}
-
-function salvandoTemaEscolhido(valorTema){
-    const temaEscolido = (valorTema === 'dark') ? localStorage.setItem('tema', 'dark') : localStorage.setItem('tema', 'light');
-};
-
-function pegandoTemaEscolhido(){
-    const tema = localStorage.getItem('tema');
-    if(tema === 'dark'){
-        pegarElemento('.header__check').checked = true;
-    }
-    modoEscuro(tema);
-};
-/* end modo escuro */
-
 function pegarElemento(elemento){
     return document.querySelector(elemento);
 };
@@ -63,6 +29,43 @@ function criarItemListaDeMoedas(url, texto){
 
     return itemLi
 }
+
+/* start modo escuro */
+pegarElemento('.header__check').addEventListener('change', pegarEstadoBtnCheked);
+
+function pegarEstadoBtnCheked(e){
+    this.checked ? modoEscuro('dark') : modoEscuro('light'); 
+}
+
+window.onload = pegandoTemaEscolhido; 
+
+function modoEscuro(tema){
+    salvandoTemaEscolhido(tema);
+    
+    if(tema === 'dark'){
+        pegarElemento('html').classList.add('dark-mode');
+        pegarElemento('.header__light').style.opacity = "0.5";
+        pegarElemento('.header__dark').style.opacity = "1";
+    }else{
+        pegarElemento('html').classList.remove('dark-mode');
+        pegarElemento('.header__light').style.opacity = "1";
+        pegarElemento('.header__dark').style.opacity = "0.5";
+    }
+}
+
+function salvandoTemaEscolhido(tema){
+    tema === 'dark' ? localStorage.setItem('tema', 'dark') : localStorage.setItem('tema', 'light');
+};
+
+function pegandoTemaEscolhido(){
+    const tema = localStorage.getItem('tema');
+
+    if(tema === 'dark'){
+        pegarElemento('.header__check').checked = true;
+    }
+    modoEscuro(tema);
+};
+/* end modo escuro */
 
 /* Criando lista de moedas */
 const urlListaMoedas = './json/resposta-lista-moedas.json';
@@ -101,6 +104,21 @@ async function puxarDadosListaMoedas(){
 };
 
 puxarDadosListaMoedas()
+
+/* start pegando dados api valores monetário */
+async function puxarDadosApiValoresMoeda(moedaBase, moedaDestino){
+    /* console.log(moedaBase);
+    console.log(moedaDestino); */
+    const apiKey = '465de5fb1516f6aa0d01062f';
+
+    const resposta = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${moedaBase}/${moedaDestino}`);
+    const respostaJson = await resposta.json();
+    const taxadeConversao = await respostaJson.conversion_rate;
+
+    return taxadeConversao;
+}
+
+/* end pegando dados api valores monetário */
 
 /* Star Redimensionando listas de moeda */
 function igualandoWidth(){
@@ -155,8 +173,14 @@ function ocultarLista(){
 function moedaSelecionada(){
     const inputPesquisar = this.parentNode.parentNode.children[0];
     const itemListaMoedas = this;
-    
-    pegarElemento(`#${inputPesquisar.id}`).value = itemListaMoedas.innerText
+    pegarElemento(`#${inputPesquisar.id}`).value = itemListaMoedas.innerText;
+
+    const moedaBase = pegarElemento(`#pesquisa-left`).value.split('-')[0];
+    const moedaDestino = pegarElemento(`#pesquisa-right`).value.split('-')[0];
+
+    if(moedaDestino.length !== 0){
+        puxarDadosApiValoresMoeda(moedaBase, moedaDestino);
+    }
 }
 /* end inserir elemento selecionado no campo de pesquisa */
 
@@ -223,11 +247,12 @@ function mostrarResultado(){
 
 /* start pegando valor do input number */
 pegarElementos('.conteudo__input').forEach((input) => {
-    input.addEventListener('input', pegarValorInput)
+    input.addEventListener('change', pegarValorInput)
 })
 
 function pegarValorInput(){
     const boxResultado = pegarElemento(`#resultado-${this.id.split('-')[1]}`);
     boxResultado.querySelector('.resultado__valor > span').innerText = this.value;
+    console.log(this.value);
 }
 /* end pegando valor do input number */
